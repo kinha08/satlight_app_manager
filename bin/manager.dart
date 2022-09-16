@@ -35,7 +35,15 @@ void main(List<String> arguments) async {
         packageName: "teste_app",
       );
 
-      manager.readDotEnvFile(mainProjectPath);
+      Map<String, String> env = await manager.readDotEnvFile(mainProjectPath);
+      print('ENV $env');
+      env.forEach((key, value) {
+        print("Enter value to $key");
+        String? newValue = stdin.readLineSync();
+        env[key] = newValue.toString();
+      });
+
+      manager.writeDotEnv(newProject.path, env);
     }
   } else {
     print("""Usage manager

@@ -123,13 +123,13 @@ void pubspecCreate(
   pubspecFile.writeAsStringSync(pubspec);
 }
 
-void readDotEnvFile(String mainPath) async {
+Future<Map<String, String>> readDotEnvFile(String mainPath) async {
   File envFile = File(path.join(mainPath, ".env"));
   Stream<String> lines =
       envFile.openRead().transform(utf8.decoder).transform(LineSplitter());
   RegExp exp = RegExp(r'(.*)=(.*)');
+  Map<String, String> env = {};
   try {
-    Map<String, String> env = {};
     await for (var line in lines) {
       exp.allMatches(line).forEach((element) {
         var temp = {
@@ -142,4 +142,15 @@ void readDotEnvFile(String mainPath) async {
   } catch (e) {
     print('Error: $e');
   }
+
+  return env;
+}
+
+void writeDotEnv(String mainPath, Map<String, String> newEnv) {
+  File envFile = File(path.join(mainPath, ".env"));
+  String envString = '';
+  newEnv.forEach((key, value) {
+    envString += "$key=$value\n";
+  });
+  envFile.writeAsBytesSync(utf8.encode(envString));
 }
